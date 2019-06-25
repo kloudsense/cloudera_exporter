@@ -112,14 +112,19 @@ To get a list of all the metrics of each Scraper, read the  Scraper, read the [M
 
 
 
-### Ownership
+### Contacts and Ownership
 **Authors:**
  - Alejandro Villegas - LEAD Developer (<avillegas@keedio.com>)
  - Roberto Manzano - Developer (<rmanzano@keedio.com>)
- - Julian Montoro - Developer (<rmanzano@keedio.com>)
- - Raul Barroso - Idea & Basic model (<rbarroso@keedio.com>)
+ - Julian Montoro - Developer (<jmontoro@keedio.com>)
+
+
+## Former collaborators
+* Raúl Barroso (Design and beta development)
 
 
 **Owners:**
  - Keedio Sistemas (<systems@keedio.com>)  
-![KEEDIO](https://www.cibernos.com/web-content/uploads/2015/02/keedio.png "KEEDIO") 
+
+**Support:**
+ - Support contact (kbdi.support@keedio.com)
