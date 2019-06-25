@@ -119,7 +119,7 @@ To get a list of all the metrics of each Scraper, read the  Scraper, read the [M
  - Julian Montoro - Developer (<jmontoro@keedio.com>)
 
 
-## Former collaborators
+**Former collaborators**
 * Raúl Barroso (Design and beta development)
 
 
