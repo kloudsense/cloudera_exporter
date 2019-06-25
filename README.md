@@ -113,6 +113,7 @@ To get a list of all the metrics of each Scraper, read the  Scraper, read the [M
 
 
 ### Contacts and Ownership
+To contact with developers for any question or proposal read the [MAINTAINERS.md](MAINTAINERS.md) file.
 **Authors:**
  - Alejandro Villegas - LEAD Developer (<avillegas@keedio.com>)
  - Roberto Manzano - Developer (<rmanzano@keedio.com>)

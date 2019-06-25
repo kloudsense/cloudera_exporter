@@ -1,7 +1,7 @@
 # Keedio, Solving Big Data Issues
 
 ## Mailing List for contributing and other questions.
-* **ce_devs@keedio.com**
+* **sense-community@keedio.com**
 
 
 ## Current developers and maintainers
