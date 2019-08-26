@@ -19,11 +19,12 @@ import (
   "strconv"
 
   // Go JSON parsing libraries
-	"github.com/tidwall/gjson"
+  "github.com/tidwall/gjson"
 )
 
+
 // Base string to the Cloudera URL Query API
-const API_BASE_URL="http://%s:%s/api/%s/%s"
+var API_BASE_URL string
 
 // Compose the URL connection to the Cloudera API Query
 func Build_api_query_url(host string, port string, version string, query string) string {

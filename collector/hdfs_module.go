@@ -63,6 +63,9 @@ const (
     HDFS_NAMENODE_FD_MAX_DESCRIPTORS = "SELECT LAST(fd_max_across_namenodes) WHERE category=SERVICE"
     HDFS_SNAPSHOT_NUM =                "SELECT LAST(total_snapshots_across_namenodes) WHERE category=CLUSTER and entityName=1"
     HDFS_SNAPSHOT_DIRS =               "SELECT LAST(total_snapshottable_directories_across_namenodes) WHERE category=CLUSTER and entityName=1"
+    HOST_DATANODE_DROP_RECEIVE_RATE=   "SELECT LAST(drop_receive_rate) WHERE category = network_interface and CLUSTERID = 1 "
+    HOST_DATANODE_DROP_TRANSMIT_RATE=  "SELECT LAST(drop_transmit_rate) WHERE category = network_interface and CLUSTERID = 1 "
+
 )
 
 
@@ -92,6 +95,8 @@ var (
   hdfs_namenode_fd_max_descriptors = create_hdfs_metric_struct("namenode_fd_max_descriptors", "Distributed File System Namenode Max File Descriptors")
   hdfs_snapshot_num =                create_hdfs_metric_struct("snapshot_num",  "Distributed File System Num Total Snapshots")
   hdfs_snapshot_dirs=                create_hdfs_metric_struct("snapshot_dirs",  "Distributed File System Num Total Snapshottable Dirs")
+  hdfs_drop_receive_rate=            create_hdfs_metric_struct("datanode_drop_receive_rate",  "drop_receive_rate")
+  hdfs_drop_transmit_rate=           create_hdfs_metric_struct("datanode_drop_transmit_rate",  "drop_transmit_rate")
 
 )
 
@@ -115,6 +120,9 @@ var hdfs_query_variable_relationship = []relation {
   {HDFS_NAMENODE_FD_MAX_DESCRIPTORS, *hdfs_namenode_fd_max_descriptors},
   {HDFS_SNAPSHOT_NUM,                *hdfs_snapshot_num},
   {HDFS_SNAPSHOT_DIRS,               *hdfs_snapshot_dirs},
+  {HOST_DATANODE_DROP_RECEIVE_RATE,  *hdfs_drop_receive_rate},
+  {HOST_DATANODE_DROP_TRANSMIT_RATE, *hdfs_drop_transmit_rate},
+
 }
 
 
@@ -137,7 +145,7 @@ func create_hdfs_metric_struct(metric_name string, description string) *promethe
   return prometheus.NewDesc(
     prometheus.BuildFQName(namespace, HDFS_SCRAPER_NAME, metric_name),
     description,
-    []string{"cluster", "entityName"},
+    []string{"cluster", "entityName","hostname"},
     nil,
   )
 }
@@ -162,6 +170,8 @@ func create_hdfs_metric (ctx context.Context, config Collector_connection_data, 
   for ts_index := 0; ts_index < num_ts_series; ts_index ++ {
     // Get the Cluster Name
     cluster_name := jp.Get_timeseries_query_cluster(json_parsed, ts_index)
+    // Get Host Name
+    host_name := jp.Get_timeseries_query_host_name(json_parsed, ts_index)
     // Get the entity Name
     entity_name := jp.Get_timeseries_query_entity_name(json_parsed, ts_index)
     // Get Query LAST value
@@ -170,7 +180,7 @@ func create_hdfs_metric (ctx context.Context, config Collector_connection_data, 
       continue
     }
     // Assing the data to the Prometheus descriptor
-    ch <- prometheus.MustNewConstMetric(&metric_struct, prometheus.GaugeValue, value, cluster_name, entity_name)
+    ch <- prometheus.MustNewConstMetric(&metric_struct, prometheus.GaugeValue, value, cluster_name, entity_name, host_name)
   }
   return true
 }

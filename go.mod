@@ -3,6 +3,7 @@ module keedio/cloudera_exporter
 go 1.12
 
 require (
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/prometheus/client_golang v0.9.2
 	github.com/prometheus/common v0.3.0
 	github.com/tidwall/gjson v1.2.1

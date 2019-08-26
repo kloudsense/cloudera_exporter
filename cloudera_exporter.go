@@ -15,32 +15,29 @@ package main
  * Dependencies and libraries
  * ====================================================================== */
 import (
+  "context"
+  "fmt"
   // Go Default libraries
   "net/http"
   "os"
   "path"
-  "time"
-  "strconv"
-  "context"
   "runtime"
-  "fmt"
+  "strconv"
   "strings"
-
+  "time"
 
   // Own libraries
   cl "keedio/cloudera_exporter/collector"
   cp "keedio/cloudera_exporter/config_parser"
   log "keedio/cloudera_exporter/logger"
 
-
   // Go external libraries
   "gopkg.in/alecthomas/kingpin.v2"
 
-
-  // Go Prometheus libraries
-  "github.com/prometheus/common/version"
   "github.com/prometheus/client_golang/prometheus"
   "github.com/prometheus/client_golang/prometheus/promhttp"
+  // Go Prometheus libraries
+  "github.com/prometheus/common/version"
 )
 
 
@@ -194,6 +191,7 @@ func parse_flags_and_config_file() error {
       return err
     }
   }
+  cl.SendConf(config)
   return nil
 }
 

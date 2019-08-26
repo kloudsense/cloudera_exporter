@@ -24,7 +24,6 @@ import (
 
 
 
-
 /* ======================================================================
  * Error Messages
  * ====================================================================== */
@@ -58,6 +57,7 @@ type CE_config struct {
   Deploy_ip string
   Deploy_port uint
   Log_level int
+  Api_request_type string
 }
 
 
@@ -115,6 +115,14 @@ func parse_api_version (config_reader *ini.File) (string, error) {
   return api_version, nil
 }
 
+func parse_api_request_type (config_reader *ini.File) (string, error) {
+  api_request_type := config_reader.Section("target").Key("request_type").String()
+  if api_request_type == "" {
+    return "", nil
+  }
+  log.Warn_msg("Request mode type: %s", api_request_type)
+  return api_request_type, nil
+}
 
 
 // Dynamic load of modules
@@ -230,6 +238,13 @@ func Parse_config(config interface{}) (*CE_config, error) {
     return nil, err
   }
 
+  // Cloudera Manager API request type
+  api_request_type, err := parse_api_request_type(cfg)
+  if err != nil {
+    log.Err_msg("Can't parse api request type field")
+    return nil, err
+  }
+
   global_status_module_flag := parse_global_status_module_flag (cfg)
   host_module_flag := parse_host_module_flag (cfg)
   impala_module_flag := parse_impala_module_flag (cfg)
@@ -281,6 +296,7 @@ func Parse_config(config interface{}) (*CE_config, error) {
   deploy_ip,
   deploy_port,
   log_level,
+  api_request_type,
   },
   nil
 }
