@@ -1,6 +1,6 @@
-# Keedio Cloudera Exporter ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg?style=plastic)
+# Keedio Cloudera Exporter
 
-![GO](https://img.shields.io/badge/go_version-1.12-blue.svg?style=plastic) ![Docker](https://img.shields.io/badge/docker_container-ready-brightgreen.svg?style=plastic)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg?style=flat-square) ![Docker](https://img.shields.io/badge/Docker_container-ready-brightgreen.svg?style=flat-square&logo=docker) ![GO](https://img.shields.io/badge/Go_version-1.12-blue.svg?style=flat-square&logo=Go) 
 
 
 
@@ -114,6 +114,7 @@ To get a list of all the metrics of each Scraper, read the  Scraper, read the [M
 
 ### Contacts and Ownership
 To contact with developers for any question or proposal read the [MAINTAINERS.md](MAINTAINERS.md) file.
+
 **Authors:**
  - Alejandro Villegas - LEAD Developer (<avillegas@keedio.com>)
  - Roberto Manzano - Developer (<rmanzano@keedio.com>)
