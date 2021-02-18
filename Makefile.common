@@ -1,131 +1,44 @@
-# Copyright 2019 Keedio
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Keedio Cloudera Exporter
+# Copyright (C) 2021 Keedio Inc.
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+GIT_COMMIT               ?= $(shell git rev-parse --short HEAD)
+GIT_BRANCH               ?= $(shell git rev-parse --abbrev-ref HEAD)
+VERSION                  ?= $(shell cat VERSION)
 
 GO                       ?= go
-GOFMT                    ?= $(GO)fmt
 GOBUILD						       ?= $(GO) build
-FIRST_GOPATH             := $(firstword $(subst :, ,$(shell $(GO) env GOPATH)))
-GOOPTS                   ?=
-GOHOSTOS                 ?= $(shell $(GO) env GOHOSTOS)
-GOHOSTARCH               ?= $(shell $(GO) env GOHOSTARCH)
-GO_VERSION               ?= $(shell $(GO) version)
-GO_VERSION_NUMBER        ?= $(word 3, $(GO_VERSION))
-PRE_GO_111               ?= $(shell echo $(GO_VERSION_NUMBER) | grep -E 'go1\.(10|[0-9])\.')
-GO_BUILD_FLAGS           ?=
-
-DOCKER						       ?= docker
-DOCKER_BUILD_FLAGS       ?= -t $(IMAGE_COMPLETE_NAME)
-DOCKER_BUILD             ?= $(DOCKER) build $(DOCKER_BUILD_FLAGS)
-DOCKER_RUN_FLAGS         ?= --name $(IMAGE_NAME) --add-host cloudera_manager:192.168.4.112   -p 9200:9200 -d
-DOCKER_RUN               ?= $(DOCKER) run
-DOCKER_RM_FLAGS          ?= -f 
-DOCKER_RM                ?= $(DOCKER) rm $(DOCKER_RM_FLAGS)
-DOCKER_IMAGE_PRUNE       ?= $(DOCKER) image prune
-DOCKER_BUILD_OUTPUT_FILE = "docker_build_output.log"
+GOBUILD_FLAGS            ?= -ldflags "-X main.KCEVersion=$(VERSION) -X main.KCEBranch=$(GIT_BRANCH) -X main.KCERevision=$(GIT_COMMIT)" 
 
 BINARY_NAME				       ?= cloudera_exporter
 
-IMAGE_NAME               ?= cloudera_exporter
-IMAGE_PROVIDER           ?= keedio
-IMAGE_VERSION            ?= $(shell cat VERSION)
-IMAGE_COMPLETE_NAME      ?= $(IMAGE_PROVIDER)/$(IMAGE_NAME):$(IMAGE_VERSION)
 
-CONTAINER_NAME           ?= cloudera_exporter
-
-DEPLOY_IP                ?= localhost
-DEPLOY_PORT					     ?= 9200
-DEPLOY_METRICS_PATH      ?= /metrics
-METRIC_CHECK_UP          ?= kbdi_exporter_up
-
-
-
-
-### Docker working Rules
+### Building Rules
 ################################################################################
-build_docker_image:
-	@echo "Building Go Inside a Docker Temporal Container"
-	@$(DOCKER_BUILD) . > $(DOCKER_BUILD_OUTPUT_FILE) || cat $(DOCKER_BUILD_OUTPUT_FILE)
-	@rm $(DOCKER_BUILD_OUTPUT_FILE)
-
-build_in_docker: build_docker_image clean_docker_none_images
-
-run_container:
-	@echo "Running in Docker container"
-ifeq ($(shell docker ps -a -f name="$(CONTAINER_NAME)$$" --format '{{.Names}}' | tail -1),$(CONTAINER_NAME))
-	@$(DOCKER_RM) $(CONTAINER_NAME) > /dev/null
-endif
-	@$(DOCKER_RUN) $(DOCKER_RUN_FLAGS) $(IMAGE_COMPLETE_NAME) > /dev/null
-
-run_in_docker: run_container sleep_pre_test test_cloudera_exporter
-
-stop_docker:
-	@docker stop $(CONTAINER_NAME)
-
-
-### Local working Rules
-################################################################################
-build_in_local:
-	@echo "Building Go in Local"
-	@$(GOBUILD) -o $(BINARY_NAME) cloudera_exporter.go
-
-run_in_local:
-	@echo "Running in Local"
-	./$(BINARY_NAME) --config-file ./config.ini
-
+build:
+	@echo "Building Cloudera Exporter"
+	@$(GOBUILD) -o $(BINARY_NAME) $(GOBUILD_FLAGS) cloudera_exporter.go
 
 ### Testing Rules
 ################################################################################
-sleep_pre_test:
-	@sleep 2
-
-test_cloudera_exporter:
-	@echo "Testing exporter"
-ifeq ($(shell curl -s "$(DEPLOY_IP):$(DEPLOY_PORT)$(DEPLOY_METRICS_PATH)" | grep "$(METRIC_CHECK_UP)" | grep -v "^\#" | awk '{ print $$2 }'),1)
-	@echo "Cloudera Exporter is \033[32mUp\033[0m"
-else
-	@echo "Cloudera Exporter is \033[31mDown\033[0m"
-endif
-
-test_exporter: test_cloudera_exporter
-	@echo "Test Finished"
+unit_tests:
+	@echo "TODO unit tests"
+	@go test
 
 
 ### Cleanning Rules
 ################################################################################
-clean_docker_none_images:
-	@echo "y" | $(DOCKER_IMAGE_PRUNE) > /dev/null
-
-clean_docker_container:
-	@$(DOCKER_RM) $(CONTAINER_NAME) > /dev/null
-
-clean_local_files:
-	@rm -f $(BINARY_NAME) > /dev/null
-
-clean_env: clean_docker_container clean_docker_none_images clean_local_files
-	@echo "Environment Cleaned"
-
-
-### Other Rules
-################################################################################
-print_help:
-	@echo "\033[37mHelp Msg:\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake all\033[37m\": Build and Run the Cloudera Exporter in Docker\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake docker_build\033[37m\": Build the Cloudera Exporter in a Docker Image\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake docker_run\033[37m\": Run the Cloudera Exporter in a Docker Container\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake docker\033[37m\": Build and Run the Cloudera Exporter in a Docker Container\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake stop\033[37m\": Stop the Docker Container\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake local_build\033[37m\": Build the Cloudera Exporter in the local system\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake local_run\033[37m\": Run the Cloudera Exporter in the local system\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake local\033[37m\": Build and Run the Cloudera Exporter in the local system\033[0m"
-	@echo "  \033[31m*\033[37m \"\033[33mmake test\033[37m\": Test the status of the Cloudera Exporter\033[0m"
+clean_go:
+	@go clean

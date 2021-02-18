@@ -1,49 +1,27 @@
-# Copyright 2019 Keedio
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Keedio Cloudera Exporter
+# Copyright (C) 2021 Keedio Inc.
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-.PHONY: Makefile.common
 include Makefile.common
 
-.PHONY: all
-all: docker_build docker_run test 
+.PHONY: all test clean
+.DEFAULT_GOAL: build
 
-.PHONY: docker_build
-docker_build: build_in_docker
 
-.PHONY: docker_run
-docker_run: run_in_docker
+all: build
 
-.PHONY: docker
-docker: docker_build docker_run
+test: unit_tests
 
-.PHONY: stop
-stop: stop_docker
-
-.PHONY: local_build
-local_build: build_in_local
-
-.PHONY: local_run
-local_run: run_in_local
-
-.PHONY: local
-local: local_build local_run
-	@echo "If Cloudera Exporter launch fails, check your config.ini or your /etc/hosts file"
-
-.PHONY: test
-test: test_exporter
-
-.PHONY: clean
-clean: clean_env
-
-.PHONY: help
-help: print_help
+clean: clean_go
