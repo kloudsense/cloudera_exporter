@@ -1,22 +1,12 @@
-# Keedio Cloudera Exporter ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg?style=plastic)
+# Keedio Cloudera Exporter
 
-![GO](https://img.shields.io/badge/go_version-1.12-blue.svg?style=plastic) ![Docker](https://img.shields.io/badge/docker_container-ready-brightgreen.svg?style=plastic)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg?style=plastic) ![GO](https://img.shields.io/badge/go_version-1.12-blue.svg?style=plastic) ![Docker](https://img.shields.io/badge/docker_container-ready-brightgreen.svg?style=plastic)
 
 
 
 
 ## What is it?
 This project builds a Prometheus Exporter to collect Cloudera status and usage metrics.
-
-
-
-
-### Dependencies
-The dependencies are:
-* _GoLang >= v1.12_
-* _github.com/prometheus/client_golang/prometheus_
-* _github.com/tidwall/gjson gopkg.in/alecthomas/kingpin.v2_
-* _github.com/sirupsen/logrus gopkg.in/ini.v1_
 
 
 
@@ -59,16 +49,10 @@ make docker
 Edit the *config.ini* file and change the host ip (cloudera_manager) in the *target* section by your Cloudera Manager IP addr.  If you want to use "cloudera_manager" as a name-domain, add the entry to your */etc/hosts* file.
 ```sh
 # Compile on local
-make local_build
-
-# Launch on local with Makefile
-make local_run
+make all
 
 # Launch on local on shell
 ./cloudera_exporter --config-file config.ini
-
-# Compile and launch
-make local
 ```
 
 Cloudera Exporter args:
@@ -84,6 +68,20 @@ Flags:
       --timeout-offset=0.25      Time to subtract from timeout in seconds.
       --version                  Show application version.
 ```
+
+
+### Docker Deploy
+#### Build Docker Image
+```sh
+# First of all, edit the config.ini file with the parameters for your environment
+
+# Build de Docker Image with the *Dockerfile* in this repository:
+docker build --build-arg VERSION="$(cat VERSION)" -t "keedio/kce:$(cat VERSION)" .
+
+# Run the container. (Maybe you want to open the exporter port)
+docker run keedio/kce:$(cat VERSION) [-p 9200:9200] --name kce
+```
+
 
 
 
@@ -114,18 +112,3 @@ To get a list of all the metrics of each Scraper, read the  Scraper, read the [M
 
 ### Contacts and Ownership
 To contact with developers for any question or proposal read the [MAINTAINERS.md](MAINTAINERS.md) file.
-**Authors:**
- - Alejandro Villegas - LEAD Developer (<avillegas@keedio.com>)
- - Roberto Manzano - Developer (<rmanzano@keedio.com>)
- - Julian Montoro - Developer (<jmontoro@keedio.com>)
-
-
-**Former collaborators**
-* Raúl Barroso (Design and beta development)
-
-
-**Owners:**
- - Keedio Sistemas (<systems@keedio.com>)  
-
-**Support:**
- - Support contact (kbdi.support@keedio.com)
