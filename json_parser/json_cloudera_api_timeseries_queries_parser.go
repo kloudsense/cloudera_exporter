@@ -23,8 +23,9 @@ import (
   "github.com/tidwall/gjson"
 )
 
+
 // Base string to the Cloudera URL TimeSeries Query API
-const TIMESERIES_API_BASE_URL="http://%s:%s/api/%s/timeseries?%s"
+var TIMESERIES_API_BASE_URL string
 
 // Compose the URL connection to the Cloudera API TimeSeries Query
 func Build_timeseries_api_query_url(host string, port string, timeseries_version string, query string) string {

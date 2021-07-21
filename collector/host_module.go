@@ -44,6 +44,17 @@ import (
  * ====================================================================== */
 const HOST_SCRAPER_NAME = "host"
 const (
+  // Name Node
+  HOST_NAMENODE_JVM_HEAP_USED_MB=                  "SELECT LAST(jvm_heap_used_mb) WHERE roleType=NameNode"
+  HOST_NAMENODE_JVM_MAX_MEMORY_MB=                 "SELECT LAST(jvm_max_memory_mb) WHERE roleType=NameNode"
+  HOST_NAMENODE_TRANSACTIONS_RATE=                 "SELECT LAST(transactions_rate) WHERE roleType=NameNode"
+  HOST_NAMENODE_SYNCS_AVG_TIME=                    "SELECT LAST(syncs_avg_time) WHERE roleType=NameNode"
+  HOST_NAMENODE_RPC_NUM_OPEN_CONNECTIONS=          "SELECT LAST(rpc_num_open_connections) WHERE roleType=NameNode"
+  HOST_NAMENODE_UNDER_REPLICATED_BLOCKS=           "SELECT LAST(under_replicated_blocks) WHERE roleType=NameNode"
+
+  //Data Node
+  HOST_DATANODE_TOTAL_BYTES_RECEIVE_RATE_ACROSS_NETWORK_INTERFACES=  "SELECT LAST(total_bytes_receive_rate_across_network_interfaces) WHERE category=HOST"
+
   // Agent Queries
   HOST_AGENT_CPU_SYSTEM_PERCENT_QUERY= "SELECT LAST(INTEGRAL(agent_cpu_system_rate)) WHERE category=HOST"
   HOST_AGENT_CPU_USER_PERCENT_QUERY=   "SELECT LAST(INTEGRAL(agent_cpu_user_rate)) WHERE category=HOST"
@@ -54,8 +65,8 @@ const (
   HOST_CPU_CORES_QUERY=                "SELECT LAST(cores) WHERE CATEGORY=HOST"
   HOST_CPU_IDLE_PERCENT_QUERY=         "SELECT (LAST(INTEGRAL(cpu_idle_rate))*100/60) / LAST(cores) WHERE CATEGORY=HOST"
   HOST_CPU_IOWAIT_PERCENT_QUERY=       "SELECT (LAST(INTEGRAL(cpu_iowait_rate))*100/60) / LAST(cores) WHERE CATEGORY=HOST"
-  HOST_CPU_LOAD15_QUERY=               "SELECT LAST(load_1) WHERE CATEGORY=HOST"
-  HOST_CPU_LOAD1_QUERY=                "SELECT LAST(load_15) WHERE CATEGORY=HOST"
+  HOST_CPU_LOAD15_QUERY=               "SELECT LAST(load_15) WHERE CATEGORY=HOST"
+  HOST_CPU_LOAD1_QUERY=                "SELECT LAST(load_1) WHERE CATEGORY=HOST"
   HOST_CPU_LOAD5_QUERY=                "SELECT LAST(load_5) WHERE CATEGORY=HOST"
   HOST_CPU_PERCENT_QUERY=              "SELECT LAST(cpu_percent) WHERE CATEGORY=HOST"
   HOST_CPU_SYSTEM_PERCENT_QUERY=       "SELECT (LAST(INTEGRAL(cpu_system_rate))*100/60) / LAST(cores) WHERE CATEGORY=HOST"
@@ -89,6 +100,17 @@ const (
 // Prometheus data Descriptors for the metrics to export
 var type_node_list map[string] []string
 var (
+  // Name Node
+  global_host_namenode_jvm_heap_used_mb = create_host_metric_struct("namenode_jvm_heap_used_mb", "jvm_heap_used_mb")
+  global_host_namenode_jvm_max_memory_mb = create_host_metric_struct("namenode_jvm_max_memory_mb", "jvm_max_memory_mb")
+  global_host_namenode_transactions_rate = create_host_metric_struct("namenode_transactions_rate", "transactions_rate")
+  global_host_namenode_syncs_avg_time = create_host_metric_struct("namenode_syncs_avg_time", "syncs_avg_time")
+  global_host_namenode_rpc_num_open_connections = create_host_metric_struct("namenode_rpc_num_open_connections", "rpc_num_open_connections")
+  global_host_namenode_under_replicated_blocks = create_host_metric_struct("namenode_under_replicated_blocks", "under_replicated_blocks")
+
+  //Data Node
+  global_host_datanode_total_bytes_receive_rate_across_network_interfaces = create_host_metric_struct("datanode_total_bytes_receive_rate_across_network_interfaces", "total_bytes_receive_rate_across_network_interfaces")
+
   // Agent Metrics
   global_host_agent_cpu_system_percent = create_host_metric_struct("agent_cpu_system_percent", "Agent CPU System Percent")
   global_host_agent_cpu_user_percent = create_host_metric_struct("agent_cpu_user_percent", "Agent CPU User Percent")
@@ -97,7 +119,7 @@ var (
 
   // CPU Metrics
   global_host_cpu_cores = create_host_metric_struct("cpu_cores",  "CPU Cores")
-	global_host_cpu_iddle_percent = create_host_metric_struct( "cpu_iddle_percent",  "CPU Iddle time percent")
+  global_host_cpu_iddle_percent = create_host_metric_struct( "cpu_iddle_percent",  "CPU Iddle time percent")
   global_host_cpu_iowait_percent = create_host_metric_struct("cpu_iowait_percent", "CPU IOWAIT time percent")
   global_host_cpu_load15 = create_host_metric_struct("load_15_by_host", "Load 15 Min By Host")
   global_host_cpu_load1 = create_host_metric_struct("load_1_by_host", "Load 1 Min By Host")
@@ -127,6 +149,15 @@ var (
 
 // Creation of the structure that relates the queries with the descriptors of the Prometheus metrics
 var host_query_variable_relationship = []relation {
+  {HOST_NAMENODE_JVM_HEAP_USED_MB,      *global_host_namenode_jvm_heap_used_mb},
+  {HOST_NAMENODE_JVM_MAX_MEMORY_MB,     *global_host_namenode_jvm_max_memory_mb},
+  {HOST_NAMENODE_TRANSACTIONS_RATE,     *global_host_namenode_transactions_rate},
+  {HOST_NAMENODE_SYNCS_AVG_TIME,        *global_host_namenode_syncs_avg_time},
+  {HOST_NAMENODE_RPC_NUM_OPEN_CONNECTIONS,     *global_host_namenode_rpc_num_open_connections},
+  {HOST_NAMENODE_UNDER_REPLICATED_BLOCKS,      *global_host_namenode_under_replicated_blocks},
+  {HOST_DATANODE_TOTAL_BYTES_RECEIVE_RATE_ACROSS_NETWORK_INTERFACES,      *global_host_datanode_total_bytes_receive_rate_across_network_interfaces},
+
+
   {HOST_AGENT_CPU_SYSTEM_PERCENT_QUERY, *global_host_agent_cpu_system_percent},
   {HOST_AGENT_CPU_USER_PERCENT_QUERY,   *global_host_agent_cpu_user_percent},
   {HOST_AGENT_PHYS_MEM_USE_QUERY,       *global_host_agent_phys_mem_use},

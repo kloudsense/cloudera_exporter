@@ -17,21 +17,24 @@ package collector
  * ====================================================================== */
 import (
   // Go Default libraries
-	"context"
-	"net/http"
+  "context"
+  "crypto/tls"
   "errors"
-	"io/ioutil"
   "fmt"
+  "github.com/mitchellh/mapstructure"
+  "io/ioutil"
+  "net/http"
   "strconv"
   "strings"
 
   // Own libraries
   jp "keedio/cloudera_exporter/json_parser"
   log "keedio/cloudera_exporter/logger"
+  //cp "keedio/cloudera_exporter/config_parser"
 
   // Go Prometheus libraries
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/tidwall/gjson"
+  "github.com/prometheus/client_golang/prometheus"
+  "github.com/tidwall/gjson"
 )
 
 
@@ -45,8 +48,6 @@ const BORDER_POS = 1
 const WORKER_POS = 2
 
 
-
-
 /* ======================================================================
  * Data Structs
  * ====================================================================== */
@@ -56,6 +57,24 @@ type relation struct {
   Metric_struct prometheus.Desc
 }
 
+var Config = &ce_config{}
+type ce_collectors_flags struct {
+  Scrapers map [Scraper] bool
+}
+type ce_config struct {
+  Num_procs int
+  Connection Collector_connection_data
+  Scrapers ce_collectors_flags
+  Deploy_ip string
+  Deploy_port uint
+  Log_level int
+  Api_request_type string
+}
+func SendConf(conf interface{}) {
+  _ = mapstructure.Decode(conf, Config)
+  jp.API_BASE_URL = fmt.Sprintf("%s://%%s:%%s/api/%%s/%%s", Config.Api_request_type)
+  jp.TIMESERIES_API_BASE_URL = fmt.Sprintf("%s://%%s:%%s/api/%%s/timeseries?%%s", Config.Api_request_type)
+}
 
 /* ======================================================================
  * Functions
@@ -64,8 +83,19 @@ type relation struct {
 func make_query(ctx context.Context, uri string, user string, passwd string) (body string, err error) {
   log.Debug_msg("Making API Query: %s ", uri)
 
+
+  //fmt.Printf("Config: %#v\n", Config.Api_request_type)
+  var httpClient *http.Client
+  if(Config.Api_request_type == "https") {
+    tr := &http.Transport{
+      TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+    }
+    httpClient = &http.Client{Transport: tr}
+  }else{
+    httpClient = http.DefaultClient
+  }
   // Get HTTP Protocol Client
-  httpClient := http.DefaultClient
+  //httpClient := http.DefaultClient
 
   // Build the request Object
   req, err := http.NewRequest(http.MethodGet, uri, nil)
@@ -88,9 +118,10 @@ func make_query(ctx context.Context, uri string, user string, passwd string) (bo
 
   // Make the API request
   res, err := httpClient.Do(req)
+
   if err != nil {
     log.Err_msg("%s", err)
-    return "" ,err
+    return "", err
   }
   if res == nil {
     log.Err_msg("HTTP response is NULL")
@@ -99,7 +130,7 @@ func make_query(ctx context.Context, uri string, user string, passwd string) (bo
   if res.StatusCode < 200 || res.StatusCode >= 400 {
     log.Err_msg("Invalid HTTP response code: %s for the request: %s", res.Status, uri)
     res.Body.Close()
-    return "" , errors.New("Invalid HTTP response code")
+    return "", errors.New("Invalid HTTP response code")
   }
 
   // Get Body Response
@@ -108,13 +139,14 @@ func make_query(ctx context.Context, uri string, user string, passwd string) (bo
   if err != nil {
     log.Err_msg("Failed to parse response with error: %s", err)
     res.Body.Close()
-    return "" ,err
+    return "", err
   }
 
   res.Body.Close()
 
   return string(content), err
 }
+
 
 
 // Create a empty map to storage the host_id as Key and a list of flags for Border, Worker or Master Host Role
@@ -335,7 +367,7 @@ func Get_api_cloudera_version(ctx context.Context, config Collector_connection_d
   // Make query
   json_parsed, err := make_query(
     ctx,
-    fmt.Sprintf("http://%s:%s/api/version", config.Host, config.Port),
+    fmt.Sprintf("%s://%s:%s/api/version", config.Api_request_type, config.Host, config.Port),
     config.User,
     config.Passwd,
   )
