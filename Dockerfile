@@ -15,6 +15,11 @@ LABEL vendor="Keedio"
 # Code copy
 RUN mkdir /go/cloudera_exporter_code
 WORKDIR /go/cloudera_exporter_code
+
+# Download dependencies
+COPY go.* /go/cloudera_exporter_code/
+RUN go mod download
+
 COPY . .
 
 # Environment variable to Static-link compilation
