@@ -280,6 +280,7 @@ func Parse_config(config interface{}) (*CE_config, error) {
     cl.Collector_connection_data {
       host,
       port,
+      api_request_type,
       api_version,
       user,
       password,

@@ -367,7 +367,7 @@ func Get_api_cloudera_version(ctx context.Context, config Collector_connection_d
   // Make query
   json_parsed, err := make_query(
     ctx,
-    fmt.Sprintf("http://%s:%s/api/version", config.Host, config.Port),
+    fmt.Sprintf("%s://%s:%s/api/version", config.Api_request_type, config.Host, config.Port),
     config.User,
     config.Passwd,
   )
