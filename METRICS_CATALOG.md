@@ -57,24 +57,24 @@ All the available metrics
 ### HDFS Module Metrics
 | Metric Name                            | Unit              | C.M. Version   | Description                                                     |  Metadata |
 |----------------------------------------|:-----------------:|:--------------:|-----------------------------------------------------------------|-----------|
-| kbdi_hdfs_dfs_capacity                 |  %                |  > 5.8         |  Distributed File System Capacity                               |  cluster  |
-| kbdi_hdfs_dfs_capacity_used            |  %                |  > 5.8         |  Distributed File System Capacity Used                          |  cluster  |
-| kbdi_hdfs_dfs_capacity_used_percent    |  bytes            |  > 5.8         |  Distributed File System Capacity Used in X Percent             |  cluster  |
+| kbdi_hdfs_dfs_capacity                 |  bytes            |  > 5.8         |  Distributed File System Capacity                               |  cluster  |
+| kbdi_hdfs_dfs_capacity_used            |  bytes            |  > 5.8         |  Distributed File System Capacity Used                          |  cluster  |
+| kbdi_hdfs_dfs_capacity_used_percent    |  percent          |  > 5.8         |  Distributed File System Capacity Used in X Percent             |  cluster  |
 | kbdi_hdfs_dfs_capacity_non_hdfs_used   |  bytes            |  > 5.8         |  Distributed File System Capacity Used by Non HDFS File System  |  cluster  |
-| kbdi_hdfs_block_capacity               |  alerts           |  > 5.8         |  Distributed File System Num Blocks Capacity                    |  cluster  |
-| kbdi_hdfs_block_total                  |  ms               |  > 5.8         |  Distributed File System Num Blocks Total                       |  cluster  |
-| kbdi_hdfs_block_corrupt_replicas       |  cores            |  > 5.8         |  Distributed File System Num Block with corrupted replicas      |  cluster  |
-| kbdi_hdfs_block_excess                 |  %                |  > 5.8         |  Distributed File System Num Excess blocks                      |  cluster  |
-| kbdi_hdfs_block_missing                |  %                |  > 5.8         |  Distributed File System Num Missing blocks                     |  cluster  |
-| kbdi_hdfs_block_under_replicated       |  %                |  > 5.8         |  Distributed File System Num Under-Replicated blocks            |  cluster  | 
-| kbdi_hdfs_block_write                  |  %                |  > 5.8         |  Distributed File System Rate Writed blocks                     |  cluster  |
-| kbdi_hdfs_block_read                   |  %                |  > 5.8         |  Distributed File System Rate Readed blocks                     |  cluster  |
-| kbdi_hdfs_files_total                  |  ms               |  > 5.8         |  Distributed File System Num Total Files In HDFS                |  cluster  |
-| kbdi_hdfs_files_size_avg               |  Usage By Thread  |  > 5.8         |  Distributed File System Avg Size of Files In HDFS              |  cluster  |
-| kbdi_hdfs_heartbeats_expired           |  Usage By Thread  |  > 5.8         |  Distributed File System Num Total Heartbeats Expired           |  cluster  |
-| kbdi_hdfs_namenode_fd_max_descriptors  |  Usage By Thread  |  > 5.8         |  Distributed File System Namenode Max File Descriptors          |  cluster  |
-| kbdi_hdfs_snapshot_num                 |  bytes            |  > 5.8         |  Distributed File System Num Total Snapshots                    |  cluster  |
-| kbdi_hdfs_snapshot_dirs                |  bytes            |  > 5.8         |  Distributed File System Num Total Snapshottable Dirs           |  cluster  |
+| kbdi_hdfs_block_capacity               |  bytes            |  > 5.8         |  Distributed File System Num Blocks Capacity                    |  cluster  |
+| kbdi_hdfs_block_total                  |  blocks           |  > 5.8         |  Distributed File System Num Blocks Total                       |  cluster  |
+| kbdi_hdfs_block_corrupt_replicas       |  blocks           |  > 5.8         |  Distributed File System Num Block with corrupted replicas      |  cluster  |
+| kbdi_hdfs_block_excess                 |  blocks           |  > 5.8         |  Distributed File System Num Excess blocks                      |  cluster  |
+| kbdi_hdfs_block_missing                |  blocks           |  > 5.8         |  Distributed File System Num Missing blocks                     |  cluster  |
+| kbdi_hdfs_block_under_replicated       |  blocks           |  > 5.8         |  Distributed File System Num Under-Replicated blocks            |  cluster  | 
+| kbdi_hdfs_block_write                  |  blocks           |  > 5.8         |  Distributed File System Rate Writed blocks                     |  cluster  |
+| kbdi_hdfs_block_read                   |  blocks           |  > 5.8         |  Distributed File System Rate Readed blocks                     |  cluster  |
+| kbdi_hdfs_files_total                  |  file             |  > 5.8         |  Distributed File System Num Total Files In HDFS                |  cluster  |
+| kbdi_hdfs_files_size_avg               |  bytes            |  > 5.8         |  Distributed File System Avg Size of Files In HDFS              |  cluster  |
+| kbdi_hdfs_heartbeats_expired           |  heartbeats       |  > 5.8         |  Distributed File System Num Total Heartbeats Expired           |  cluster  |
+| kbdi_hdfs_namenode_fd_max_descriptors  |  file descriptors |  > 5.8         |  Distributed File System Namenode Max File Descriptors          |  cluster  |
+| kbdi_hdfs_snapshot_num                 |  snapshots        |  > 5.8         |  Distributed File System Num Total Snapshots                    |  cluster  |
+| kbdi_hdfs_snapshot_dirs                |  dirs             |  > 5.8         |  Distributed File System Num Total Snapshottable Dirs           |  cluster  |
 
 ### Impala Module Metrics
 
