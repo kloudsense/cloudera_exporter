@@ -2,7 +2,7 @@
 ## STEP 1: Build  ##
 ####################
 # Image Base
-FROM golang:1.14 AS builder
+FROM golang:1.20.2 AS builder
 
 # Arguments
 ARG VERSION="0.0"

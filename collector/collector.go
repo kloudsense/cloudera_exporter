@@ -40,6 +40,7 @@ const subsystem = "exporter"
 type Collector_connection_data struct {
   Host string
   Port string
+  UseTls bool
   Api_version string
   User string
   Passwd string

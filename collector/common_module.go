@@ -17,6 +17,7 @@ package collector
  * ====================================================================== */
 import (
   // Go Default libraries
+	"crypto/tls"
 	"context"
 	"net/http"
   "errors"
@@ -56,6 +57,21 @@ type relation struct {
   Metric_struct prometheus.Desc
 }
 
+func get_http_client(uri string) *http.Client {
+  httpClient := http.DefaultClient
+  protocolStr := uri[:5]
+  if (protocolStr == "https") {
+    httpClient = &http.Client{
+      Transport: &http.Transport{
+        TLSClientConfig: &tls.Config{
+          InsecureSkipVerify: true, // test server certificate is not trusted.
+        },
+      },
+    }
+  }
+
+  return httpClient
+}
 
 /* ======================================================================
  * Functions
@@ -64,8 +80,7 @@ type relation struct {
 func make_query(ctx context.Context, uri string, user string, passwd string) (body string, err error) {
   log.Debug_msg("Making API Query: %s ", uri)
 
-  // Get HTTP Protocol Client
-  httpClient := http.DefaultClient
+  httpClient := get_http_client(uri)
 
   // Build the request Object
   req, err := http.NewRequest(http.MethodGet, uri, nil)
@@ -127,6 +142,7 @@ func init_host_types_map(ctx context.Context, config Collector_connection_data) 
     jp.Build_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       fmt.Sprintf("hosts")),
     config.User,
@@ -149,6 +165,7 @@ func look_for_border_nodes(ctx context.Context, config Collector_connection_data
     jp.Build_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       fmt.Sprintf("clusters/%s/services/hdfs/roles", cluster_name)),
     config.User,
@@ -179,6 +196,7 @@ func look_for_worker_nodes(ctx context.Context, config Collector_connection_data
     jp.Build_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       fmt.Sprintf("clusters/%s/services/hdfs/roles", cluster_name)),
     config.User,
@@ -208,6 +226,7 @@ func look_for_master_nodes(ctx context.Context, config Collector_connection_data
     jp.Build_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       fmt.Sprintf("cm/service/roles")),
     config.User,
@@ -240,6 +259,7 @@ func get_type_node_list (ctx context.Context, config Collector_connection_data) 
     jp.Build_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       fmt.Sprintf("clusters")),
     config.User,
@@ -286,6 +306,7 @@ func make_and_parse_timeseries_query(ctx context.Context, config Collector_conne
     jp.Build_timeseries_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       jp.Encode_tsquery_to_http(query)),
     config.User,
@@ -308,6 +329,7 @@ func make_and_parse_api_query(ctx context.Context, config Collector_connection_d
     jp.Build_api_query_url(
       config.Host,
       config.Port,
+      config.UseTls,
       config.Api_version,
       query),
     config.User,
@@ -333,9 +355,13 @@ func get_cloudera_manager_version(ctx context.Context, config Collector_connecti
 // Returns a string with the highest version of the Cloudera API
 func Get_api_cloudera_version(ctx context.Context, config Collector_connection_data) (string, error) {
   // Make query
+  protocol := "http"
+  if (config.UseTls) {
+    protocol = "https"
+  }
   json_parsed, err := make_query(
     ctx,
-    fmt.Sprintf("http://%s:%s/api/version", config.Host, config.Port),
+    fmt.Sprintf("%s://%s:%s/api/version", protocol, config.Host, config.Port),
     config.User,
     config.Passwd,
   )

@@ -24,11 +24,16 @@ import (
 )
 
 // Base string to the Cloudera URL TimeSeries Query API
-const TIMESERIES_API_BASE_URL="http://%s:%s/api/%s/timeseries?%s"
+const TIMESERIES_API_BASE_URL="%s://%s:%s/api/%s/timeseries?%s"
+const HTTP = "http"
+const HTTPS = "https"
 
 // Compose the URL connection to the Cloudera API TimeSeries Query
-func Build_timeseries_api_query_url(host string, port string, timeseries_version string, query string) string {
-  return fmt.Sprintf(TIMESERIES_API_BASE_URL, host, port, timeseries_version, query)
+func Build_timeseries_api_query_url(host string, port string, use_tls bool, timeseries_version string, query string) string {
+  if (use_tls == false) {
+    return fmt.Sprintf(TIMESERIES_API_BASE_URL, HTTP, host, port, timeseries_version, query)
+  }
+  return fmt.Sprintf(TIMESERIES_API_BASE_URL, HTTPS, host, port, timeseries_version, query)
 }
 
 // Return the host_id metadata parameter from a TimeSeries Query
