@@ -41,6 +41,11 @@ make docker_run
 make docker
 ```
 
+Using `docker-compose.yml`:
+```sh
+docker-compose up -d
+```
+
 
 
 

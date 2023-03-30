@@ -1,0 +1,8 @@
+version: "3"
+services:
+   cloudera_exporter:
+      build: .
+      restart: always
+      container_name: cloudera_exporter
+      ports:
+       - 9200:9200
