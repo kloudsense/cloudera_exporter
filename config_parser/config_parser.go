@@ -105,6 +105,10 @@ func parse_port (config_reader *ini.File) (string, error) {
   return port, nil
 }
 
+func parse_use_tls(config_reader *ini.File) bool {
+  use_tls_flag := config_reader.Section("target").Key("use_tls").MustBool(false)
+  return use_tls_flag
+}
 
 func parse_api_version (config_reader *ini.File) (string, error) {
   api_version := config_reader.Section("target").Key("version").String()
@@ -231,6 +235,7 @@ func Parse_config(config interface{}) (*CE_config, error) {
   }
 
   global_status_module_flag := parse_global_status_module_flag (cfg)
+  use_tls_flag := parse_use_tls (cfg)
   host_module_flag := parse_host_module_flag (cfg)
   impala_module_flag := parse_impala_module_flag (cfg)
   hdfs_module_flag := parse_hdfs_module_flag (cfg)
@@ -263,11 +268,12 @@ func Parse_config(config interface{}) (*CE_config, error) {
   return &CE_config {
     num_procs,
     cl.Collector_connection_data {
-      host,
-      port,
-      api_version,
-      user,
-      password,
+      Host:        host,
+      Port:        port,
+      UseTls:      use_tls_flag,
+      Api_version: api_version,
+      User:        user,
+      Passwd:      password,
     },
     CE_collectors_flags{
       map [cl.Scraper] bool {
